@@ -83,8 +83,11 @@ cp -rf /ctx/dot_config/niri/config.kdl /etc/skel/.config/niri/
 # ---------------------------------------------------------------------------
 dnf5 install -y gh nodejs npm
 
-# chezmoi (official installer)
-curl -fsLS get.chezmoi.io | sh -s -- -b /usr/local/bin
+# chezmoi (direct download; the install script's -b flag fails at build time)
+CHEZMOI_VERSION=$(curl -fsSL https://api.github.com/repos/twpayne/chezmoi/releases/latest | sed -n 's/.*"tag_name": *"v\([^"]*\)".*/\1/p')
+curl -fsSL "https://github.com/twpayne/chezmoi/releases/download/v${CHEZMOI_VERSION}/chezmoi_${CHEZMOI_VERSION}_linux-glibc_amd64.tar.gz" -o /tmp/chezmoi.tar.gz
+tar -xzf /tmp/chezmoi.tar.gz -C /tmp chezmoi
+install -m 755 /tmp/chezmoi /usr/local/bin/chezmoi
 
 # lazygit (atim COPR)
 curl -Lo /etc/yum.repos.d/atim-lazygit.repo \
