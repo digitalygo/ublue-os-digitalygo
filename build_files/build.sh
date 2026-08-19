@@ -76,25 +76,14 @@ mkdir -p /etc/skel/.config/niri
 cp -rf /ctx/dot_config/niri/config.kdl /etc/skel/.config/niri/
 
 # ---------------------------------------------------------------------------
-# 4. CLI tools via Homebrew (already shipped by Bluefin DX)
+# Note: user apps are installed at runtime via ujust, not baked:
+#   - CLI tools (gh, node, chezmoi, lazygit, opencode)  -> `ujust digitalygo-brew`
+#   - GUI apps via flatpak (codium, telegram, ...)       -> `ujust digitalygo-flatpak`
+# Homebrew and the filtered Flathub remote are not usable at build time.
 # ---------------------------------------------------------------------------
-brew install gh chezmoi lazygit node@22
-brew install anomalyco/tap/opencode
-brew link --force --overwrite node@22
 
 # ---------------------------------------------------------------------------
-# 5. GUI apps via Flatpak
-# ---------------------------------------------------------------------------
-flatpak install -y flathub \
-    com.vscodium.VSCodium \
-    org.localsend.localsend \
-    org.telegram.desktop \
-    org.libreoffice.LibreOffice \
-    md.obsidian.Obsidian \
-    org.filezillaproject.Filezilla
-
-# ---------------------------------------------------------------------------
-# 6. Google Chrome (for Chrome DevTools)
+# 4. Google Chrome (for Chrome DevTools)
 # ---------------------------------------------------------------------------
 cat > /etc/yum.repos.d/google-chrome.repo << 'EOF'
 [google-chrome]
@@ -107,7 +96,7 @@ EOF
 dnf5 install -y google-chrome-stable
 
 # ---------------------------------------------------------------------------
-# 7. VPN + mesh networking
+# 5. VPN + mesh networking
 # ---------------------------------------------------------------------------
 dnf5 install -y openvpn NetworkManager-openvpn
 
@@ -119,12 +108,15 @@ baseurl=https://pkgs.netbird.io/yum/
 enabled=1
 gpgcheck=1
 gpgkey=https://pkgs.netbird.io/yum/repodata/repomd.xml.key
-repo_gpgcheck=1
+repo_gpgcheck=0
 EOF
-dnf5 install -y netbird
+# netbird's %post runs systemctl/service commands that fail in a container
+# build; skip scriptlets and set it up at runtime with
+# `netbird service install` + `netbird up --setup-key <key>`.
+dnf5 install -y --setopt=tsflags=noscripts netbird
 
 # ---------------------------------------------------------------------------
-# 8. Development toolchains
+# 6. Development toolchains
 # ---------------------------------------------------------------------------
 dnf5 install -y \
     golang golang-x-tools-gopls delve \
@@ -132,17 +124,11 @@ dnf5 install -y \
     php-mbstring php-intl php-zip php-curl php-opcache php-pecl-xdebug composer
 
 # ---------------------------------------------------------------------------
-# 9. Sunshine streaming server (Moonlight client connects to this)
+# 7. Sunshine streaming server (Moonlight client connects to this)
 # ---------------------------------------------------------------------------
 curl -Lo /etc/yum.repos.d/lizardbyte-sunshine.repo \
     "https://copr.fedorainfracloud.org/coprs/lizardbyte/stable/repo/fedora-$(rpm -E %fedora)/lizardbyte-stable-fedora-$(rpm -E %fedora).repo"
 dnf5 install -y Sunshine
-
-# ---------------------------------------------------------------------------
-# 10. JetBrains Toolbox manager (the IDEs themselves are installed per-user)
-# ---------------------------------------------------------------------------
-brew tap ublue-os/homebrew-tap
-brew install --cask jetbrains-toolbox-linux
 
 # ---------------------------------------------------------------------------
 # Enable podman socket
