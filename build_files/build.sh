@@ -85,6 +85,9 @@ cp -rf /ctx/dot_config/niri/config.kdl /etc/skel/.config/niri/
 # ---------------------------------------------------------------------------
 # 4. GUI apps via Flatpak
 # ---------------------------------------------------------------------------
+# bluefin ships flathub filtered to the 'verified' subset; enable the full set
+flatpak remote-modify --subset= flathub
+
 flatpak install -y flathub \
     com.vscodium.VSCodium \
     org.localsend.localsend \
