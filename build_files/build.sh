@@ -76,29 +76,14 @@ mkdir -p /etc/skel/.config/niri
 cp -rf /ctx/dot_config/niri/config.kdl /etc/skel/.config/niri/
 
 # ---------------------------------------------------------------------------
-# 4. CLI tools
-# Note: brew is NOT available at build time in Bluefin (it is extracted by
-# brew-setup.service on first boot and refuses to run as root), so these are
-# installed via dnf or direct binaries instead.
+# Note: CLI dev tools (gh, node, chezmoi, lazygit, opencode) are NOT baked.
+# Homebrew is not usable at build time in Bluefin (extracted on first boot by
+# brew-setup.service and refuses to run as root), so those are installed at
+# runtime via `ujust digitalygo-brew` (see system_files ujust recipe).
 # ---------------------------------------------------------------------------
-dnf5 install -y gh nodejs npm
-
-# chezmoi (direct download; the install script's -b flag fails at build time)
-CHEZMOI_VERSION=$(curl -fsSL https://api.github.com/repos/twpayne/chezmoi/releases/latest | sed -n 's/.*"tag_name": *"v\([^"]*\)".*/\1/p')
-curl -fsSL "https://github.com/twpayne/chezmoi/releases/download/v${CHEZMOI_VERSION}/chezmoi_${CHEZMOI_VERSION}_linux-glibc_amd64.tar.gz" -o /tmp/chezmoi.tar.gz
-tar -xzf /tmp/chezmoi.tar.gz -C /tmp chezmoi
-install -m 755 /tmp/chezmoi /usr/bin/chezmoi
-
-# lazygit (atim COPR)
-curl -Lo /etc/yum.repos.d/atim-lazygit.repo \
-    "https://copr.fedorainfracloud.org/coprs/atim/lazygit/repo/fedora-$(rpm -E %fedora)/atim-lazygit-fedora-$(rpm -E %fedora).repo"
-dnf5 install -y lazygit
-
-# opencode (official installer, native binary)
-OPENCODE_INSTALL_DIR=/usr/bin curl -fsSL https://opencode.ai/install | bash -s -- --no-modify-path
 
 # ---------------------------------------------------------------------------
-# 5. GUI apps via Flatpak
+# 4. GUI apps via Flatpak
 # ---------------------------------------------------------------------------
 flatpak install -y flathub \
     com.vscodium.VSCodium \
@@ -109,7 +94,7 @@ flatpak install -y flathub \
     org.filezillaproject.Filezilla
 
 # ---------------------------------------------------------------------------
-# 6. Google Chrome (for Chrome DevTools)
+# 5. Google Chrome (for Chrome DevTools)
 # ---------------------------------------------------------------------------
 cat > /etc/yum.repos.d/google-chrome.repo << 'EOF'
 [google-chrome]
@@ -122,7 +107,7 @@ EOF
 dnf5 install -y google-chrome-stable
 
 # ---------------------------------------------------------------------------
-# 7. VPN + mesh networking
+# 6. VPN + mesh networking
 # ---------------------------------------------------------------------------
 dnf5 install -y openvpn NetworkManager-openvpn
 
@@ -139,7 +124,7 @@ EOF
 dnf5 install -y netbird
 
 # ---------------------------------------------------------------------------
-# 8. Development toolchains
+# 7. Development toolchains
 # ---------------------------------------------------------------------------
 dnf5 install -y \
     golang golang-x-tools-gopls delve \
@@ -147,7 +132,7 @@ dnf5 install -y \
     php-mbstring php-intl php-zip php-curl php-opcache php-pecl-xdebug composer
 
 # ---------------------------------------------------------------------------
-# 9. Sunshine streaming server (Moonlight client connects to this)
+# 8. Sunshine streaming server (Moonlight client connects to this)
 # ---------------------------------------------------------------------------
 curl -Lo /etc/yum.repos.d/lizardbyte-sunshine.repo \
     "https://copr.fedorainfracloud.org/coprs/lizardbyte/stable/repo/fedora-$(rpm -E %fedora)/lizardbyte-stable-fedora-$(rpm -E %fedora).repo"
