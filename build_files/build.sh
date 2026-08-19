@@ -87,7 +87,7 @@ dnf5 install -y gh nodejs npm
 CHEZMOI_VERSION=$(curl -fsSL https://api.github.com/repos/twpayne/chezmoi/releases/latest | sed -n 's/.*"tag_name": *"v\([^"]*\)".*/\1/p')
 curl -fsSL "https://github.com/twpayne/chezmoi/releases/download/v${CHEZMOI_VERSION}/chezmoi_${CHEZMOI_VERSION}_linux-glibc_amd64.tar.gz" -o /tmp/chezmoi.tar.gz
 tar -xzf /tmp/chezmoi.tar.gz -C /tmp chezmoi
-install -m 755 /tmp/chezmoi /usr/local/bin/chezmoi
+install -m 755 /tmp/chezmoi /usr/bin/chezmoi
 
 # lazygit (atim COPR)
 curl -Lo /etc/yum.repos.d/atim-lazygit.repo \
@@ -95,7 +95,7 @@ curl -Lo /etc/yum.repos.d/atim-lazygit.repo \
 dnf5 install -y lazygit
 
 # opencode (official installer, native binary)
-OPENCODE_INSTALL_DIR=/usr/local/bin curl -fsSL https://opencode.ai/install | bash -s -- --no-modify-path
+OPENCODE_INSTALL_DIR=/usr/bin curl -fsSL https://opencode.ai/install | bash -s -- --no-modify-path
 
 # ---------------------------------------------------------------------------
 # 5. GUI apps via Flatpak
