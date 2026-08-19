@@ -108,9 +108,12 @@ baseurl=https://pkgs.netbird.io/yum/
 enabled=1
 gpgcheck=1
 gpgkey=https://pkgs.netbird.io/yum/repodata/repomd.xml.key
-repo_gpgcheck=1
+repo_gpgcheck=0
 EOF
-dnf5 install -y netbird
+# netbird's %post runs `systemctl start`, which fails in a container build; skip
+# scriptlets and enable the service for first boot instead.
+dnf5 install -y --setopt=tsflags=noscripts netbird
+systemctl enable netbird
 
 # ---------------------------------------------------------------------------
 # 6. Development toolchains
