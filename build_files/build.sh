@@ -76,28 +76,14 @@ mkdir -p /etc/skel/.config/niri
 cp -rf /ctx/dot_config/niri/config.kdl /etc/skel/.config/niri/
 
 # ---------------------------------------------------------------------------
-# Note: CLI dev tools (gh, node, chezmoi, lazygit, opencode) are NOT baked.
-# Homebrew is not usable at build time in Bluefin (extracted on first boot by
-# brew-setup.service and refuses to run as root), so those are installed at
-# runtime via `ujust digitalygo-brew` (see system_files ujust recipe).
+# Note: user apps are installed at runtime via ujust, not baked:
+#   - CLI tools (gh, node, chezmoi, lazygit, opencode)  -> `ujust digitalygo-brew`
+#   - GUI apps via flatpak (codium, telegram, ...)       -> `ujust digitalygo-flatpak`
+# Homebrew and the filtered Flathub remote are not usable at build time.
 # ---------------------------------------------------------------------------
 
 # ---------------------------------------------------------------------------
-# 4. GUI apps via Flatpak
-# ---------------------------------------------------------------------------
-# bluefin ships flathub filtered to the 'verified' subset; enable the full set
-flatpak remote-modify --subset= flathub
-
-flatpak install -y flathub \
-    com.vscodium.VSCodium \
-    org.localsend.localsend \
-    org.telegram.desktop \
-    org.libreoffice.LibreOffice \
-    md.obsidian.Obsidian \
-    org.filezillaproject.Filezilla
-
-# ---------------------------------------------------------------------------
-# 5. Google Chrome (for Chrome DevTools)
+# 4. Google Chrome (for Chrome DevTools)
 # ---------------------------------------------------------------------------
 cat > /etc/yum.repos.d/google-chrome.repo << 'EOF'
 [google-chrome]
@@ -110,7 +96,7 @@ EOF
 dnf5 install -y google-chrome-stable
 
 # ---------------------------------------------------------------------------
-# 6. VPN + mesh networking
+# 5. VPN + mesh networking
 # ---------------------------------------------------------------------------
 dnf5 install -y openvpn NetworkManager-openvpn
 
@@ -127,7 +113,7 @@ EOF
 dnf5 install -y netbird
 
 # ---------------------------------------------------------------------------
-# 7. Development toolchains
+# 6. Development toolchains
 # ---------------------------------------------------------------------------
 dnf5 install -y \
     golang golang-x-tools-gopls delve \
@@ -135,7 +121,7 @@ dnf5 install -y \
     php-mbstring php-intl php-zip php-curl php-opcache php-pecl-xdebug composer
 
 # ---------------------------------------------------------------------------
-# 8. Sunshine streaming server (Moonlight client connects to this)
+# 7. Sunshine streaming server (Moonlight client connects to this)
 # ---------------------------------------------------------------------------
 curl -Lo /etc/yum.repos.d/lizardbyte-sunshine.repo \
     "https://copr.fedorainfracloud.org/coprs/lizardbyte/stable/repo/fedora-$(rpm -E %fedora)/lizardbyte-stable-fedora-$(rpm -E %fedora).repo"

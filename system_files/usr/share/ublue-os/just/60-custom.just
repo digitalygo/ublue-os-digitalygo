@@ -9,6 +9,24 @@ digitalygo-brew:
     brew install gh chezmoi lazygit node
     brew install anomalyco/tap/opencode
 
+# Install GUI apps via Flatpak (full, unfiltered Flathub).
+# Run once after first login.
+[group('Digitalygo')]
+digitalygo-flatpak:
+    #!/usr/bin/env bash
+    set -euo pipefail
+
+    flatpak remote-add --if-not-exists --user flathub https://flathub.org/repo/flathub.flatpakrepo || true
+    flatpak remote-modify --user --subset= flathub || true
+
+    flatpak install -y --user flathub \
+        com.vscodium.VSCodium \
+        org.localsend.localsend \
+        org.telegram.desktop \
+        org.libreoffice.LibreOffice \
+        md.obsidian.Obsidian \
+        org.filezillaproject.Filezilla
+
 # Bootstrap: GitHub auth, Pi, DMS integration, and chezmoi dotfiles.
 # Run `ujust digitalygo-brew` first (installs gh and node via brew).
 [group('Digitalygo')]
