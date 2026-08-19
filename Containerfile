@@ -10,6 +10,10 @@ FROM ghcr.io/ublue-os/bluefin-dx:stable
 ## make modifications desired in your image and install packages by modifying the build.sh script
 ## the following RUN directive does all the things required to run "build.sh" as recommended.
 
+## Make /opt a real directory: Fedora bootc images symlink /opt to /var/opt, which
+## breaks packages that install into /opt (e.g. google-chrome).
+RUN rm /opt && mkdir /opt
+
 RUN --mount=type=bind,from=ctx,source=/,target=/ctx \
     --mount=type=cache,dst=/var/cache \
     --mount=type=cache,dst=/var/log \
