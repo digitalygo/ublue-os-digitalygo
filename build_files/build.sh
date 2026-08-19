@@ -35,7 +35,8 @@ dnf5 install -y \
     xdg-desktop-portal-wlr \
     lxpolkit \
     kitty \
-    nautilus
+    nautilus \
+    gnome-keyring
 
 # Bibata cursor theme (morros look)
 curl -Lo /etc/yum.repos.d/peterwu-rendezvous.repo \
@@ -77,13 +78,18 @@ cp -rf /ctx/dot_config/niri/config.kdl /etc/skel/.config/niri/
 # ---------------------------------------------------------------------------
 # 4. CLI tools via Homebrew (already shipped by Bluefin DX)
 # ---------------------------------------------------------------------------
-brew install gh chezmoi node@22
+brew install gh chezmoi lazygit node@22
 brew link --force --overwrite node@22
 
 # ---------------------------------------------------------------------------
 # 5. GUI apps via Flatpak
 # ---------------------------------------------------------------------------
-flatpak install -y flathub com.vscodium.VSCodium
+flatpak install -y flathub \
+    com.vscodium.VSCodium \
+    org.localsend.localsend \
+    org.telegram.desktop \
+    org.libreoffice.LibreOffice \
+    md.obsidian.Obsidian
 
 # ---------------------------------------------------------------------------
 # 6. Google Chrome (for Chrome DevTools)
@@ -99,9 +105,21 @@ EOF
 dnf5 install -y google-chrome-stable
 
 # ---------------------------------------------------------------------------
-# 7. VPN
+# 7. VPN + mesh networking
 # ---------------------------------------------------------------------------
 dnf5 install -y openvpn NetworkManager-openvpn
+
+# NetBird (WireGuard mesh VPN, CLI agent)
+cat > /etc/yum.repos.d/netbird.repo << 'EOF'
+[netbird]
+name=netbird
+baseurl=https://pkgs.netbird.io/yum/
+enabled=1
+gpgcheck=1
+gpgkey=https://pkgs.netbird.io/yum/repodata/repomd.xml.key
+repo_gpgcheck=1
+EOF
+dnf5 install -y netbird
 
 # ---------------------------------------------------------------------------
 # 8. Development toolchains
