@@ -79,6 +79,7 @@ cp -rf /ctx/dot_config/niri/config.kdl /etc/skel/.config/niri/
 # 4. CLI tools via Homebrew (already shipped by Bluefin DX)
 # ---------------------------------------------------------------------------
 brew install gh chezmoi lazygit node@22
+brew install anomalyco/tap/opencode
 brew link --force --overwrite node@22
 
 # ---------------------------------------------------------------------------
@@ -89,7 +90,8 @@ flatpak install -y flathub \
     org.localsend.localsend \
     org.telegram.desktop \
     org.libreoffice.LibreOffice \
-    md.obsidian.Obsidian
+    md.obsidian.Obsidian \
+    org.filezillaproject.Filezilla
 
 # ---------------------------------------------------------------------------
 # 6. Google Chrome (for Chrome DevTools)
