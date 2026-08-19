@@ -76,11 +76,23 @@ mkdir -p /etc/skel/.config/niri
 cp -rf /ctx/dot_config/niri/config.kdl /etc/skel/.config/niri/
 
 # ---------------------------------------------------------------------------
-# 4. CLI tools via Homebrew (already shipped by Bluefin DX)
+# 4. CLI tools
+# Note: brew is NOT available at build time in Bluefin (it is extracted by
+# brew-setup.service on first boot and refuses to run as root), so these are
+# installed via dnf or direct binaries instead.
 # ---------------------------------------------------------------------------
-brew install gh chezmoi lazygit node@22
-brew install anomalyco/tap/opencode
-brew link --force --overwrite node@22
+dnf5 install -y gh nodejs npm
+
+# chezmoi (official installer)
+curl -fsLS get.chezmoi.io | sh -s -- -b /usr/local/bin
+
+# lazygit (atim COPR)
+curl -Lo /etc/yum.repos.d/atim-lazygit.repo \
+    "https://copr.fedorainfracloud.org/coprs/atim/lazygit/repo/fedora-$(rpm -E %fedora)/atim-lazygit-fedora-$(rpm -E %fedora).repo"
+dnf5 install -y lazygit
+
+# opencode (official installer, native binary)
+OPENCODE_INSTALL_DIR=/usr/local/bin curl -fsSL https://opencode.ai/install | bash -s -- --no-modify-path
 
 # ---------------------------------------------------------------------------
 # 5. GUI apps via Flatpak
@@ -137,12 +149,6 @@ dnf5 install -y \
 curl -Lo /etc/yum.repos.d/lizardbyte-sunshine.repo \
     "https://copr.fedorainfracloud.org/coprs/lizardbyte/stable/repo/fedora-$(rpm -E %fedora)/lizardbyte-stable-fedora-$(rpm -E %fedora).repo"
 dnf5 install -y Sunshine
-
-# ---------------------------------------------------------------------------
-# 10. JetBrains Toolbox manager (the IDEs themselves are installed per-user)
-# ---------------------------------------------------------------------------
-brew tap ublue-os/homebrew-tap
-brew install --cask jetbrains-toolbox-linux
 
 # ---------------------------------------------------------------------------
 # Enable podman socket

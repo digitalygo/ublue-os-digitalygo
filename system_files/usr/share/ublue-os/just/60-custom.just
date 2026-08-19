@@ -1,4 +1,4 @@
-# Digitalygo workstation bootstrap: GitHub auth, Pi agent, and chezmoi dotfiles
+# Digitalygo workstation bootstrap: GitHub auth, dev agents, and chezmoi dotfiles
 [group('Digitalygo')]
 digitalygo-setup:
     #!/usr/bin/env bash
@@ -14,12 +14,16 @@ digitalygo-setup:
     npm config set prefix "${HOME}/.local"
     npm install -g --ignore-scripts @earendil-works/pi-coding-agent
 
-    # 3. DMS niri integration (generates ~/.config/niri/dms/*.kdl)
+    # 3. JetBrains Toolbox manager (per-user; run once, then install IDEs from it)
+    brew tap ublue-os/homebrew-tap
+    brew install --cask jetbrains-toolbox-linux
+
+    # 4. DMS niri integration (generates ~/.config/niri/dms/*.kdl)
     if command -v dms &>/dev/null; then
         dms setup || true
     fi
 
-    # 4. chezmoi dotfiles from the private digitalygo repo
+    # 5. chezmoi dotfiles from the private digitalygo repo
     if [[ ! -d "${HOME}/.local/share/chezmoi" ]]; then
         chezmoi init digitalygo/dotfiles
     fi
