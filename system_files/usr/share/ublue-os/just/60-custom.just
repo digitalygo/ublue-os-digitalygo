@@ -8,8 +8,13 @@ digitalygo-setup:
     set -euo pipefail
 
     # 1. CLI tools via Homebrew
-    brew install gh chezmoi lazygit node
+    brew install gh chezmoi lazygit
     brew install anomalyco/tap/opencode
+
+    # node via mise (brew's node postinstall fails on this image)
+    mise install node@22
+    mise use -g node@22
+    export PATH="${HOME}/.local/share/mise/shims:${PATH}"
 
     # 2. GitHub auth (interactive, one-time per machine)
     if ! gh auth status &>/dev/null; then
