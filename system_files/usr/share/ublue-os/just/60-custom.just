@@ -25,7 +25,3 @@ digitalygo-setup:
 
     npm config set prefix "${HOME}/.local"
     npm install -g --ignore-scripts @earendil-works/pi-coding-agent
-
-    if command -v dms &>/dev/null; then
-        dms setup || true
-    fi
