@@ -32,7 +32,7 @@ fi
 # ---------------------------------------------------------------------------
 curl -Lo /etc/yum.repos.d/ryanabx-cosmic.repo \
     "https://copr.fedorainfracloud.org/coprs/ryanabx/cosmic-epoch/repo/fedora-$(rpm -E %fedora)/ryanabx-cosmic-epoch-fedora-$(rpm -E %fedora).repo"
-dnf5 install -y cosmic-desktop greetd gnome-keyring
+dnf5 install -y cosmic-desktop cosmic-greeter greetd gnome-keyring
 
 # greetd + cosmic-greeter as the login manager
 id cosmic-greeter &>/dev/null || useradd --system --home-dir /var/lib/cosmic-greeter --create-home --shell /usr/sbin/nologin cosmic-greeter
