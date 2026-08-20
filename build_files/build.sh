@@ -6,7 +6,7 @@ set -ouex pipefail
 cp -avf "/ctx/system_files"/. /
 
 # ---------------------------------------------------------------------------
-# 1. Remove GNOME: this image uses niri + DMS, no double desktop
+# 1. Remove GNOME: this image uses COSMIC, no double desktop
 # ---------------------------------------------------------------------------
 GNOME_PACKAGES=(
     bluefin-logos
@@ -28,62 +28,33 @@ if [[ ${#GNOME_INSTALLED[@]} -gt 0 ]]; then
 fi
 
 # ---------------------------------------------------------------------------
-# 2. niri + wayland session essentials
+# 2. COSMIC desktop (System76) + greetd login manager
 # ---------------------------------------------------------------------------
-dnf5 install -y \
-    niri \
-    xdg-desktop-portal-wlr \
-    lxpolkit \
-    kitty \
-    nautilus \
-    gnome-keyring
+dnf5 install -y @cosmic-desktop-environment cosmic-greeter greetd gnome-keyring
 
-# Bibata cursor theme (morros look)
-curl -Lo /etc/yum.repos.d/peterwu-rendezvous.repo \
-    "https://copr.fedorainfracloud.org/coprs/peterwu/rendezvous/repo/fedora-$(rpm -E %fedora)/peterwu-rendezvous-fedora-$(rpm -E %fedora).repo"
-dnf5 install -y bibata-cursor-themes
-
-# ---------------------------------------------------------------------------
-# 3. Dank Linux shell (DMS) + greetd login manager
-# ---------------------------------------------------------------------------
-curl --output-dir /etc/yum.repos.d/ --remote-name \
-    "https://copr.fedorainfracloud.org/coprs/avengemedia/dms/repo/fedora-$(rpm -E %fedora)/avengemedia-dms-fedora-$(rpm -E %fedora).repo"
-dnf5 install -y quickshell dms greetd dms-greeter --allowerasing
-
-# greeter user for greetd (if not already present)
-id greeter &>/dev/null || useradd --system --home-dir /var/lib/greetd --create-home --shell /usr/sbin/nologin greeter
-
-# greetd config + replace the display manager with greetd
+# greetd + cosmic-greeter as the login manager
+id cosmic-greeter &>/dev/null || useradd --system --home-dir /var/lib/cosmic-greeter --create-home --shell /usr/sbin/nologin cosmic-greeter
 mkdir -p /etc/greetd
 cat > /etc/greetd/config.toml << 'EOF'
 [terminal]
 vt = 1
 
 [default_session]
-user = "greeter"
-command = "dms-greeter --command niri"
+command = "cosmic-comp cosmic-greeter"
+user = "cosmic-greeter"
 EOF
 rm -f /etc/systemd/system/display-manager.service
 ln -s /usr/lib/systemd/system/greetd.service /etc/systemd/system/display-manager.service
 systemctl enable --force greetd.service
 
-# DMS autostart for new users
-mkdir -p /etc/skel/.config/systemd/user/graphical-session.target.wants
-ln -s /usr/lib/systemd/user/dms.service /etc/skel/.config/systemd/user/graphical-session.target.wants/
-
-# niri config for new users
-mkdir -p /etc/skel/.config/niri
-cp -rf /ctx/dot_config/niri/config.kdl /etc/skel/.config/niri/
-
 # ---------------------------------------------------------------------------
 # Note: user apps are installed at runtime via ujust, not baked:
-#   - CLI tools (gh, node, chezmoi, lazygit, opencode)  -> `ujust digitalygo-brew`
-#   - GUI apps via flatpak (codium, telegram, ...)       -> `ujust digitalygo-flatpak`
-# Homebrew and the filtered Flathub remote are not usable at build time.
+#   - CLI tools (gh, node, chezmoi, lazygit, opencode)  -> `ujust digitalygo-setup`
+#   - GUI apps via flatpak (codium, telegram, ...)       -> `ujust digitalygo-setup`
 # ---------------------------------------------------------------------------
 
 # ---------------------------------------------------------------------------
-# 4. Google Chrome (for Chrome DevTools)
+# 3. Google Chrome (for Chrome DevTools)
 # ---------------------------------------------------------------------------
 cat > /etc/yum.repos.d/google-chrome.repo << 'EOF'
 [google-chrome]
@@ -96,7 +67,7 @@ EOF
 dnf5 install -y google-chrome-stable
 
 # ---------------------------------------------------------------------------
-# 5. VPN + mesh networking
+# 4. VPN + mesh networking
 # ---------------------------------------------------------------------------
 dnf5 install -y openvpn NetworkManager-openvpn
 
@@ -110,13 +81,10 @@ gpgcheck=1
 gpgkey=https://pkgs.netbird.io/yum/repodata/repomd.xml.key
 repo_gpgcheck=0
 EOF
-# netbird's %post runs systemctl/service commands that fail in a container
-# build; skip scriptlets and set it up at runtime with
-# `netbird service install` + `netbird up --setup-key <key>`.
 dnf5 install -y --setopt=tsflags=noscripts netbird
 
 # ---------------------------------------------------------------------------
-# 6. Development toolchains
+# 5. Development toolchains
 # ---------------------------------------------------------------------------
 dnf5 install -y \
     golang golang-x-tools-gopls delve \
@@ -124,7 +92,7 @@ dnf5 install -y \
     php-mbstring php-intl php-zip php-curl php-opcache php-pecl-xdebug composer
 
 # ---------------------------------------------------------------------------
-# 7. Sunshine streaming server (Moonlight client connects to this)
+# 6. Sunshine streaming server (Moonlight client connects to this)
 # ---------------------------------------------------------------------------
 curl -Lo /etc/yum.repos.d/lizardbyte-sunshine.repo \
     "https://copr.fedorainfracloud.org/coprs/lizardbyte/stable/repo/fedora-$(rpm -E %fedora)/lizardbyte-stable-fedora-$(rpm -E %fedora).repo"
