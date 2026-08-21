@@ -30,7 +30,7 @@ digitalygo-setup:
         com.bambulab.BambuStudio
 
     flatpak remote-add --if-not-exists --user cosmic https://apt.pop-os.org/cosmic/cosmic.flatpakrepo || true
-    flatpak install -y --user cosmic io.github.hepp3n.kdeconnect
+    flatpak install -y --user cosmic io.github.hepp3n.kdeconnect//master
 
     npm config set prefix "${HOME}/.local"
     npm install -g --ignore-scripts @earendil-works/pi-coding-agent
