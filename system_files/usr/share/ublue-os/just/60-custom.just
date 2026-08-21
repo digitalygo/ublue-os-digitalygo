@@ -3,7 +3,7 @@ digitalygo-setup:
     #!/usr/bin/env bash
     set -euo pipefail
 
-    brew install gh chezmoi lazygit
+    brew install gh chezmoi lazygit mise
     brew install anomalyco/tap/opencode
 
     mise install node@22
