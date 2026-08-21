@@ -17,8 +17,8 @@ digitalygo-setup:
     flatpak remote-add --if-not-exists --user flathub https://flathub.org/repo/flathub.flatpakrepo || true
     flatpak remote-modify --user --subset= flathub || true
     flatpak install -y --user flathub \
-        com.vscodium.VSCodium \
-        org.localsend.localsend \
+        com.vscodium.codium \
+        org.localsend.localsend_app \
         org.telegram.desktop \
         org.libreoffice.LibreOffice \
         md.obsidian.Obsidian \
