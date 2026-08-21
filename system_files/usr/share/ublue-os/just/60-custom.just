@@ -11,6 +11,7 @@ digitalygo-setup:
     export PATH="${HOME}/.local/share/mise/shims:${PATH}"
 
     brew tap ublue-os/homebrew-tap
+    brew trust ublue-os/tap
     brew install --cask jetbrains-toolbox-linux
 
     flatpak remote-add --if-not-exists --user flathub https://flathub.org/repo/flathub.flatpakrepo || true
