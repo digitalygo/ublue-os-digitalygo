@@ -22,7 +22,15 @@ digitalygo-setup:
         org.telegram.desktop \
         org.libreoffice.LibreOffice \
         md.obsidian.Obsidian \
-        org.filezillaproject.Filezilla
+        org.filezillaproject.Filezilla \
+        org.godotengine.Godot3 \
+        com.google.AndroidStudio \
+        dev.zed.Zed \
+        cc.arduino.IDE2 \
+        com.bambulab.BambuStudio
+
+    flatpak remote-add --if-not-exists --user cosmic https://apt.pop-os.org/cosmic/cosmic.flatpakrepo || true
+    flatpak install -y --user cosmic io.github.hepp3n.kdeconnect
 
     npm config set prefix "${HOME}/.local"
     npm install -g --ignore-scripts @earendil-works/pi-coding-agent
