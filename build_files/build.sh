@@ -99,6 +99,23 @@ curl -Lo /etc/yum.repos.d/lizardbyte-sunshine.repo \
 dnf5 install -y Sunshine
 
 # ---------------------------------------------------------------------------
+# 7. Browser/email dedup
+# Firefox stays as RPM: native-messaging extensions (e.g. Video DownloadHelper,
+# which needs its companion app) are painful under the flatpak sandbox.
+# Thunderbird stays as flatpak. Remove the other of each to avoid duplicate
+# launcher entries (base image ships both forms).
+# ---------------------------------------------------------------------------
+if flatpak list --system 2>/dev/null | grep -q org.mozilla.firefox; then
+    flatpak uninstall --system -y org.mozilla.firefox
+fi
+
+THUNDERBIRD_PACKAGES=(thunderbird)
+readarray -t THUNDERBIRD_INSTALLED < <(rpm -qa --queryformat='%{NAME}\n' "${THUNDERBIRD_PACKAGES[@]}" 2>/dev/null || true)
+if [[ ${#THUNDERBIRD_INSTALLED[@]} -gt 0 ]]; then
+    dnf5 remove -y "${THUNDERBIRD_INSTALLED[@]}"
+fi
+
+# ---------------------------------------------------------------------------
 # Enable podman socket
 # ---------------------------------------------------------------------------
 systemctl enable podman.socket
