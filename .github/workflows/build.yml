@@ -50,7 +50,9 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
 
       - name: Test node runtime policy
-        run: bash tests/test-node-runtime.sh
+        run: |
+          bash tests/test-node-runtime.sh
+          bash tests/test-pi-wrapper.sh
 
       - name: Maximize build space
         uses: ublue-os/remove-unwanted-software@695eb75bc387dbcd9685a8e72d23439d8686cba6

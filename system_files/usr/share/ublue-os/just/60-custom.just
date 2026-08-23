@@ -11,6 +11,10 @@ digitalygo-setup:
     mise use -g node@24
     export PATH="${HOME}/.local/share/mise/shims:${PATH}"
 
+    if [ -e "${HOME}/.local/bin/pi" ] && grep -Fq '.local/opt/node22' "${HOME}/.local/bin/pi"; then
+        rm -f "${HOME}/.local/bin/pi" "${HOME}/.local/bin/pi-real"
+    fi
+
     brew tap ublue-os/homebrew-tap
     brew trust ublue-os/tap
     brew install --cask jetbrains-toolbox-linux
