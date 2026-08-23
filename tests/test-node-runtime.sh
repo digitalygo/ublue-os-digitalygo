@@ -14,6 +14,7 @@ wrapper_file="${repository_root}/system_files/usr/bin/pi"
 [[ "$(grep -Fc 'mise exec node@24 -- npm install --prefix "${HOME}/.local/libexec/pi"' "$setup_file")" -eq 1 ]]
 [[ "$(grep -Fc 'npm config set prefix' "$setup_file")" -eq 0 ]]
 [[ "$(grep -Fc 'export PATH="$HOME/.local/share/mise/shims:$PATH"' "$profile_file")" -eq 1 ]]
+[[ -x "$wrapper_file" ]]
 [[ "$(grep -Fc 'exec mise exec node@24 -- node' "$wrapper_file")" -eq 1 ]]
 [[ "$(grep -Fc '.local/libexec/pi/node_modules/@earendil-works/pi-coding-agent/dist/cli.js' "$wrapper_file")" -eq 1 ]]
 [[ "$(grep -Fc "grep -Fq '.local/opt/node22'" "$setup_file")" -eq 1 ]]
