@@ -5,9 +5,10 @@ digitalygo-setup:
 
     brew install gh chezmoi lazygit mise
     brew install anomalyco/tap/opencode
+    brew postinstall ca-certificates
 
-    mise install node@22
-    mise use -g node@22
+    mise install node@24
+    mise use -g node@24
     export PATH="${HOME}/.local/share/mise/shims:${PATH}"
 
     brew tap ublue-os/homebrew-tap
@@ -32,5 +33,4 @@ digitalygo-setup:
     flatpak remote-add --if-not-exists --user cosmic https://apt.pop-os.org/cosmic/cosmic.flatpakrepo || true
     flatpak install -y --user cosmic io.github.hepp3n.kdeconnect//master
 
-    npm config set prefix "${HOME}/.local"
-    npm install -g --ignore-scripts @earendil-works/pi-coding-agent
+    mise exec node@24 -- npm install --prefix "${HOME}/.local/libexec/pi" --ignore-scripts @earendil-works/pi-coding-agent
