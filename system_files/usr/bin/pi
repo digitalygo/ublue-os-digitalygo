@@ -1,0 +1,5 @@
+#!/usr/bin/env sh
+
+set -eu
+
+exec mise exec node@24 -- node "$HOME/.local/libexec/pi/node_modules/@earendil-works/pi-coding-agent/dist/cli.js" "$@"
