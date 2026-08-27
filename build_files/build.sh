@@ -71,18 +71,6 @@ dnf5 install -y google-chrome-stable
 # ---------------------------------------------------------------------------
 dnf5 install -y openvpn NetworkManager-openvpn
 
-# NetBird (WireGuard mesh VPN, CLI agent)
-cat > /etc/yum.repos.d/netbird.repo << 'EOF'
-[netbird]
-name=netbird
-baseurl=https://pkgs.netbird.io/yum/
-enabled=1
-gpgcheck=1
-gpgkey=https://pkgs.netbird.io/yum/repodata/repomd.xml.key
-repo_gpgcheck=0
-EOF
-dnf5 install -y --setopt=tsflags=noscripts netbird
-
 # ---------------------------------------------------------------------------
 # 5. Development toolchains
 # ---------------------------------------------------------------------------

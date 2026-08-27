@@ -120,6 +120,38 @@ sudo bootc switch ghcr.io/<username>/<image_name>
 ```
 This should queue your image for the next reboot, which you can do immediately after the command finishes. You have officially set up your custom image! See the following section for an explanation of the important parts of the template for customization.
 
+## Digitalygo NetBird onboarding
+
+NetBird is the company WireGuard mesh VPN client. It is layered onto the image at runtime with the official Universal Blue rpm-ostree procedure, wrapped in a single command. Run it as your normal desktop user, never with sudo:
+
+```bash
+ujust digitalygo-netbird-setup
+```
+
+- The first run writes the official signed NetBird repository, stages `rpm-ostree install --idempotent netbird`, and asks you to reboot. It never reboots automatically.
+- After the reboot, run the same command again. It enables and starts the upstream `netbird.service`, then launches interactive enrollment with `netbird up` as your user.
+- Repeated runs are safe. The staged install is idempotent, and a service that is already enabled and running is left alone.
+
+> [!WARNING]
+> Do not run the command with sudo. The command rejects root before doing anything, so you must keep it running in your desktop session for the interactive SSO flow to open in your browser. Do not store setup keys or generated client configuration in the image or the repository either. Enrollment is interactive, and any key committed to the image or to git would leak company network credentials.
+
+### Updating from a legacy image
+
+If your system has the NetBird RPM but no `netbird.service` unit, update to the fixed image, reboot, and rerun the command. There is no custom service repair: the official package flow owns the package and its unit.
+
+### Verifying NetBird status
+
+```bash
+rpm -q netbird
+systemctl is-enabled netbird
+systemctl is-active netbird
+netbird status
+```
+
+The package should be installed, the service enabled and active, and `netbird status` should reach the running daemon. Before enrollment the peer reports a disconnected state; after enrollment it reports the assigned NetBird IP and a connected state.
+
+See the [official NetBird Linux installation guide](https://docs.netbird.io/get-started/install/linux#fedora-silverblue-atomic-universal-blue-rpm-ostree) for the upstream Fedora Silverblue (Atomic) / Universal Blue procedure.
+
 # Repository Contents
 
 ## Containerfile
