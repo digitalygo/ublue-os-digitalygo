@@ -1,16 +1,19 @@
 ---
 status: completed
 created_at: 2026-08-26
+updated_at: 2026-09-05
 files_edited:
   - build_files/build.sh
+  - docs/new-installation.md
   - .github/workflows/build.yml
   - README.md
   - system_files/usr/share/digitalygo/netbird.repo
   - system_files/usr/share/ublue-os/just/60-custom.just
   - tests/test-netbird-ujust.sh
-rationale: Replace the broken image-baked NetBird package and abandoned custom service helper with NetBird's official Universal Blue rpm-ostree installation flow exposed through one rerunnable ujust command.
+rationale: Replace the broken image-baked NetBird package and abandoned custom service helper with NetBird's official Universal Blue rpm-ostree installation flow, then document the required fresh-install and upgrade sequence.
 supporting_docs:
   - https://docs.netbird.io/get-started/install/linux#fedora-silverblue-atomic-universal-blue-rpm-ostree
+  - ../../../docs/new-installation.md
   - ../research/2026-08-26-netbird-image-integration.md
   - ../status/2026-08-26-official-netbird-ujust-preexisting-changes.md
 ---
@@ -62,3 +65,21 @@ All checks passed. The deterministic NetBird suite covers package staging, pendi
 The frozen quality package `ef0b9d086a552bdb035fee367d2793bf20f67d9ea740327aa75ad8b18226b7eb` passed. The separate cumulative security package with the same content hash also passed.
 
 A live rpm-ostree deployment, reboot, systemd activation, and browser SSO cycle remains to be validated after building and booting the fixed image.
+
+## Update on 2026-09-05
+
+### Summary of new work
+
+Added `docs/new-installation.md` with the complete first-login order, a reference for both Digitalygo `ujust` recipes, the required two-pass NetBird installation, and the supported update path after NetBird is layered.
+
+### Technical reasoning
+
+NetBird must remain a local rpm-ostree layer so its RPM scriptlets can provision the upstream service on a booted host. The guide makes the resulting update constraint explicit: use bootc before layering NetBird, then use `rpm-ostree upgrade` for later image updates. It also distinguishes the scoped NetBird uninstall from the broader `rpm-ostree reset` operation.
+
+### Impact assessment
+
+The documentation gives new workstation installations one ordered procedure and prevents the bootc incompatibility message from being mistaken for a broken deployment. No image, recipe, package, or runtime behavior changed.
+
+### Validation steps
+
+The guide was checked against `60-custom.just`, the shipped NetBird repository definition, the NetBird regression test, the README, and the existing operation record. The NetBird test, Just syntax check, Markdown structural checks, and `git diff --check` passed.
