@@ -104,6 +104,18 @@ if [[ ${#THUNDERBIRD_INSTALLED[@]} -gt 0 ]]; then
 fi
 
 # ---------------------------------------------------------------------------
+# 8. Remove Orca screen reader (build time only)
+# The desktop packages above can pull in Orca. Its global key handlers can
+# intercept keystrokes users did not intend to send to a screen reader, so the
+# image intentionally removes it at build time. Only the orca RPM is removed:
+# at-spi, the COSMIC desktop and the on-screen keyboard stay installed, and no
+# user preference is changed.
+# ---------------------------------------------------------------------------
+if rpm -q orca &>/dev/null; then
+    dnf5 remove -y --no-autoremove orca
+fi
+
+# ---------------------------------------------------------------------------
 # Enable podman socket
 # ---------------------------------------------------------------------------
 systemctl enable podman.socket
